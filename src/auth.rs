@@ -1,5 +1,4 @@
 use actix_http::StatusCode;
-use actix_identity::Identity;
 use actix_web::{web, HttpResponse, Responder};
 use argon2::{
     password_hash::{PasswordHash, PasswordVerifier},
@@ -7,9 +6,9 @@ use argon2::{
 };
 use regex::Regex;
 use serde::{Deserialize, Serialize};
-use std::sync::RwLock;
 
 use crate::db_auth;
+use crate::jwt;
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct LoginForm {
@@ -17,7 +16,7 @@ pub struct LoginForm {
     password: String,
 }
 
-pub async fn create_account(pool: &db_auth::Pool, create_form: web::Json<LoginForm>) -> impl Responder {
+pub async fn create_account(pool: &db_auth::Pool, create_form: web::Json<LoginForm>) -> impl Responder + use<> {
     // check password length is between 8 and 32, inclusive
     if create_form.password.len() >= 8 && create_form.password.len() <= 64 {
         // check if user is a sketchy motherfucker
@@ -26,7 +25,7 @@ pub async fn create_account(pool: &db_auth::Pool, create_form: web::Json<LoginFo
             return HttpResponse::BadRequest()
                 .status(StatusCode::from_u16(400).unwrap())
                 .insert_header(("Cache-Control", "no-cache"))
-                .body("{\"status\": \"you_sketchy_motherfucker\"}");
+                .body("{\"token\": \"bad_characters\"}");
         }
         // check if username is taken
         let target_user_temp: Result<db_auth::User, actix_web::Error> = db_auth::get_user_username(pool, create_form.username.clone()).await;
@@ -34,7 +33,7 @@ pub async fn create_account(pool: &db_auth::Pool, create_form: web::Json<LoginFo
             return HttpResponse::BadRequest()
                 .status(StatusCode::from_u16(409).unwrap())
                 .insert_header(("Cache-Control", "no-cache"))
-                .body("{\"status\": \"username_taken\"}");
+                .body("{\"token\": \"bad_username\"}");
         } else {
             // insert into database
             let user_temp: Result<db_auth::User, actix_web::Error> = db_auth::create_user(
@@ -48,29 +47,25 @@ pub async fn create_account(pool: &db_auth::Pool, create_form: web::Json<LoginFo
                 return HttpResponse::BadRequest()
                     .status(StatusCode::from_u16(500).unwrap())
                     .insert_header(("Cache-Control", "no-cache"))
-                    .body("{\"status\": \"creation_error\"}");
+                    .body("{\"token\": \"bad_creation\"}");
             } else {
-                drop(user_temp);
+                let user = user_temp.unwrap();
+                let token: String= jwt::create_jwt(user).unwrap_or("bad_token".to_string());
                 return HttpResponse::Ok()
                     .status(StatusCode::from_u16(200).unwrap())
                     .insert_header(("Cache-Control", "no-cache"))
-                    .body("{\"status\": \"success\"}");
+                    .body(format!("{{\"token\": \"{}\"}}", token));
             }
         }
     } else {
         return HttpResponse::BadRequest()
             .status(StatusCode::from_u16(413).unwrap())
             .insert_header(("Cache-Control", "no-cache"))
-            .body("{\"status\": \"password_length\"}");
+            .body("{\"token\": \"bad_password\"}");
     }
 }
 
-pub async fn login(
-    pool: &db_auth::Pool,
-    session: web::Data<RwLock<crate::Sessions>>,
-    identity: Identity,
-    login_form: web::Json<LoginForm>,
-) -> impl Responder {
+pub async fn login(pool: &db_auth::Pool, login_form: web::Json<LoginForm>) -> impl Responder + use<> {
     // try to get target user from database
     let target_user_temp: Result<db_auth::User, actix_web::Error> = db_auth::get_user_username(pool, login_form.username.clone()).await;
     if target_user_temp.is_err() {
@@ -78,7 +73,7 @@ pub async fn login(
         return HttpResponse::BadRequest()
             .status(StatusCode::from_u16(400).unwrap())
             .insert_header(("Cache-Control", "no-cache"))
-            .body("{\"status\": \"bad_s1\"}");
+            .body("{\"token\": \"bad_s1\"}");
     }
     // query was OK, unwrap and set to target_user
     let target_user = target_user_temp.unwrap();
@@ -93,43 +88,37 @@ pub async fn login(
             return HttpResponse::BadRequest()
                 .status(StatusCode::from_u16(400).unwrap())
                 .insert_header(("Cache-Control", "no-cache"))
-                .body("{\"status\": \"bad_s2\"}");
+                .body("{\"token\": \"bad_s2\"}");
         }
         // check that the provided password's hash is equal to the correct password's hash
         if Argon2::default()
             .verify_password(login_form.password.as_bytes(), &parsed_hash.unwrap())
             .is_ok()
         {
-            // save the username to the identity
-            identity.remember(login_form.username.clone());
-            // write the user object to the session
-            session
-                .write()
-                .unwrap()
-                .user_map
-                .insert(target_user.clone().username.to_string(), target_user.clone());
+            /* CREATE JWT */
+            let token: String= jwt::create_jwt(target_user).unwrap_or("bad_s5".to_string());
             // send generic success response
             return HttpResponse::Ok()
                 .status(StatusCode::from_u16(200).unwrap())
                 .insert_header(("Cache-Control", "no-cache"))
-                .body("{\"status\": \"success\"}");
+                .body(format!("{{\"token\": \"{}\"}}", token));
         } else {
             // bad password, send 400
             return HttpResponse::BadRequest()
                 .status(StatusCode::from_u16(400).unwrap())
                 .insert_header(("Cache-Control", "no-cache"))
-                .body("{\"status\": \"bad_s3\"}");
+                .body("{\"token\": \"bad_s3\"}");
         }
     } else {
         // target user id is zero, send 400
         return HttpResponse::BadRequest()
             .status(StatusCode::from_u16(400).unwrap())
             .insert_header(("Cache-Control", "no-cache"))
-            .body("{\"status\": \"bad_s4\"}");
+            .body("{\"token\": \"bad_s4\"}");
     }
 }
 
-pub async fn delete_account(pool: &db_auth::Pool, login_form: web::Json<LoginForm>, session: web::Data<RwLock<crate::Sessions>>, identity: Identity) -> Result<HttpResponse, actix_web::Error> {
+pub async fn delete_account(pool: &db_auth::Pool, login_form: web::Json<LoginForm>) -> Result<HttpResponse, actix_web::Error> {
     let target_user_temp: Result<db_auth::User, actix_web::Error> = db_auth::get_user_username(pool, login_form.username.clone()).await;
     if target_user_temp.is_err() {
         return Ok(HttpResponse::BadRequest()
@@ -150,7 +139,6 @@ pub async fn delete_account(pool: &db_auth::Pool, login_form: web::Json<LoginFor
             .verify_password(login_form.password.as_bytes(), &parsed_hash.unwrap())
             .is_ok()
         {
-            logout(session, identity).await;
             Ok(HttpResponse::Ok().json(
                 db_auth::execute_manage_user(&pool, [target_user.id.to_string()]).await?,
             ))
@@ -166,19 +154,4 @@ pub async fn delete_account(pool: &db_auth::Pool, login_form: web::Json<LoginFor
             .insert_header(("Cache-Control", "no-cache"))
             .body("{\"status\": \"bad\"}"))
     }
-}
-
-pub async fn logout(session: web::Data<RwLock<crate::Sessions>>, identity: Identity) -> HttpResponse {
-    // if session exists, proceed
-    if let Some(id) = identity.identity() {
-        // forget identity
-        identity.forget();
-        // remove user object from the user hashmap
-        session.write().unwrap().user_map.remove(&id);
-    }
-
-    HttpResponse::Ok()
-        .status(StatusCode::OK)
-        .insert_header(("Cache-Control", "no-cache"))
-        .body("done")
 }
