@@ -49,12 +49,13 @@ struct IncomingChatGptRequest {
 
 #[derive(Serialize)]
 struct ChatGptRequest {
+    model: String,
     messages: Vec<Message>,
 }
 
 impl ChatGptRequest {
-    pub fn new(messages: Vec<Message>) -> Self {
-        Self { messages }
+    pub fn new(model: String, messages: Vec<Message>) -> Self {
+        Self { model, messages }
     }
 }
 
@@ -70,6 +71,8 @@ impl Message {
     }
 }
 
+const SYSTEM_PROMPT: &str = "Please break this school assignment down into an appropriate number of manageable pieces, assigning a due date for each. Output in a JSON, an array of objects containing a date (in proper time zone), title (name of course and a colon, followed by the name of the assignment shortened and cleaned up if needed, and the title of the step), description (describe step), and duration  (estimate time to complete in minutes). Return ONLY the JSON, the output will be machine read.";
+
 async fn chatgpt_handler(req: web::Json<IncomingChatGptRequest>, _claims: web::ReqData<jwt::Claims>) -> HttpResponse {
     let client = Client::new();
     let api_key = env::var("OPENAI_API_KEY").expect("API key not set");
@@ -81,14 +84,14 @@ async fn chatgpt_handler(req: web::Json<IncomingChatGptRequest>, _claims: web::R
     }).into_owned();
 
     let full_prompt = format!(
-        "\nCourse: Test\nAssignment name: Test\nDue date: 01/01/2026 09:00\nCity: America/New York\n\nAssignment content: \"{}\"",
+        "Course: Test\nAssignment name: Test\nDue date: 01/01/2026 09:00\nCity: America/New York\n\nAssignment content: \"{}\"",
         fixed
     );
 
     let response = client
-        .post("https://api.openai.com/v1/assistants/asst_7gYNXRWbGdV99qG6Xr4F2aak/messages")
+        .post("https://api.openai.com/v1/chat/completions")
         .bearer_auth(api_key)
-        .json(&ChatGptRequest::new( [Message::new("user".to_string(), full_prompt)].to_vec()))
+        .json(&ChatGptRequest::new("gpt-4.1-nano".to_string(), [Message::new("system".to_string(), SYSTEM_PROMPT.to_string()), Message::new("user".to_string(), full_prompt)].to_vec()))
         .send()
         .await;
 
