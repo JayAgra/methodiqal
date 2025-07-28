@@ -9,7 +9,7 @@ use crate::db_auth;
 
 #[derive(Debug, Serialize, Clone, Deserialize)]
 pub struct Claims {
-    pub sub: db_auth::User,
+    pub sub: i64,
     exp: usize,
 }
 
@@ -20,7 +20,7 @@ pub fn create_jwt(user: db_auth::User) -> Result<String, jsonwebtoken::errors::E
         .timestamp() as usize;
 
     let claims = Claims {
-        sub: user,
+        sub: user.id,
         exp: expiration,
     };
 
@@ -71,7 +71,7 @@ where
         if let Some(header_value) = auth_header {
             if header_value.starts_with("Bearer ") {
                 let token = header_value.trim_start_matches("Bearer ").trim();
-                let secret = env::var("JWT_SECRET").expect("JWT_SECRET must be set");
+                let secret = env::var("JWT_SECRET").expect("INSECURE_DEFAULT");
 
                 let decoded = decode::<Claims>(
                     token,

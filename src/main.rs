@@ -37,7 +37,7 @@ async fn auth_post_delete(db: web::Data<Databases>, data: web::Json<auth::LoginF
 async fn auth_get_whoami(db: web::Data<Databases>, claims: web::ReqData<jwt::Claims>) -> Result<HttpResponse, AWError> {
     Ok(HttpResponse::Ok()
         .insert_header(("Cache-Control", "no-cache"))
-        .json(db_auth::get_user_username(&db.auth, claims.into_inner().sub.username).await?))
+        .json(db_auth::get_user_id(&db.auth, claims.into_inner().sub).await?))
 }
 
 // ChatGPT API forwarding
@@ -146,7 +146,6 @@ async fn main() -> io::Result<()> {
             .wrap(Governor::new(&governor_conf))
             // logging middleware
             .wrap(middleware::Logger::default())
-            .wrap(jwt::Auth)
             // default headers for caching. overridden on most all api endpoints
             .wrap(
                 DefaultHeaders::new()
@@ -159,6 +158,7 @@ async fn main() -> io::Result<()> {
             )
             .service(
                 web::resource("/api/v1/auth/whoami")
+                    .wrap(jwt::Auth)
                     .route(web::get().to(auth_get_whoami))
             )
             // post
@@ -172,10 +172,13 @@ async fn main() -> io::Result<()> {
             )
             .service(
                 web::resource("/api/v1/auth/delete")
+                    .wrap(jwt::Auth)
                     .route(web::post().to(auth_post_delete)),
             )
-            .route(
-                "/api/chatgpt", web::post().to(chatgpt_handler)
+            .service(
+                web::resource("/api/v1/chatgpt")
+                    .wrap(jwt::Auth)
+                    .route(web::post().to(chatgpt_handler))
             )
     })
     .bind("0.0.0.0:3003")?

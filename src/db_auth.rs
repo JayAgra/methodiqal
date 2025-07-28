@@ -58,8 +58,30 @@ fn get_user_username_entry(conn: Connection, id: String) -> Result<User, rusqlit
         Ok(User {
             id: row.get(0)?,
             username: row.get(1)?,
-            pass_hash: row.get(2)?,
-            pro_until: row.get(3)?
+            pro_until: row.get(2)?,
+            pass_hash: row.get(3)?
+        })
+    })
+}
+
+pub async fn get_user_id(pool: &Pool, id: i64) -> Result<User, Error> {
+    let pool = pool.clone();
+
+    let conn = web::block(move || pool.get()).await?.map_err(error::ErrorInternalServerError)?;
+
+    web::block(move || get_user_id_entry(conn, id))
+        .await?
+        .map_err(error::ErrorInternalServerError)
+}
+
+fn get_user_id_entry(conn: Connection, id: i64) -> Result<User, rusqlite::Error> {
+    let mut stmt = conn.prepare("SELECT * FROM users WHERE id=?1;")?;
+    stmt.query_row([id], |row| {
+        Ok(User {
+            id: row.get(0)?,
+            username: row.get(1)?,
+            pro_until: row.get(2)?,
+            pass_hash: row.get(3)?
         })
     })
 }
