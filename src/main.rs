@@ -69,8 +69,6 @@ impl Message {
     }
 }
 
-const SYSTEM_PROMPT: &str = "Please break this school assignment down into an appropriate number of manageable pieces, assigning a due date for each. Output in a JSON, an array of objects containing a date (in proper time zone), title (name of course and a colon, followed by the name of the assignment shortened and cleaned up if needed, and the title of the step), description (describe step), and duration  (estimate time to complete in minutes). Return ONLY the JSON, the output will be machine read. No new lines, spaces, or tabs. Base time estimations on a mid to high level, fast working high school or college student.";
-
 async fn chatgpt_handler(req: web::Json<IncomingChatGptRequest>, _claims: web::ReqData<jwt::Claims>) -> HttpResponse {
     let client = Client::new();
     let api_key = env::var("OPENAI_API_KEY").expect("API key not set");
@@ -89,7 +87,7 @@ async fn chatgpt_handler(req: web::Json<IncomingChatGptRequest>, _claims: web::R
     let response = client
         .post("https://api.openai.com/v1/chat/completions")
         .bearer_auth(api_key)
-        .json(&ChatGptRequest::new("gpt-4.1".to_string(), [Message::new("system".to_string(), SYSTEM_PROMPT.to_string()), Message::new("user".to_string(), full_prompt)].to_vec()))
+        .json(&ChatGptRequest::new("gpt-4.1".to_string(), [Message::new("system".to_string(), env::var("PROMPT").expect("Please break this school assignment down into an appropriate number of manageable pieces, assigning a due date for each. Output in a JSON, an array of objects containing a date (in proper time zone), title (name of course and a colon, followed by the name of the assignment shortened and cleaned up if needed, and the title of the step), description (describe step), and duration  (estimate time to complete in minutes). Return ONLY the JSON, the output will be machine read. No new lines, spaces, or tabs. Base time estimations on a mid to high level, quite fast working high school or college student.").to_string()), Message::new("user".to_string(), full_prompt)].to_vec()))
         .send()
         .await;
 
