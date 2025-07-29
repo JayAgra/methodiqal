@@ -9,7 +9,7 @@ use crate::db_auth;
 
 #[derive(Debug, Serialize, Clone, Deserialize)]
 pub struct Claims {
-    pub sub: i64,
+    pub sub: u64,
     exp: usize,
 }
 

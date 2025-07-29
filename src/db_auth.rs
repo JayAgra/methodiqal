@@ -1,125 +1,95 @@
-use actix_web::{error, web, Error};
+use actix_web::{web, HttpResponse, Responder};
 use argon2::{
     password_hash::{rand_core::OsRng, PasswordHasher, SaltString},
     Argon2,
 };
-use rusqlite::{params, Statement};
 use serde::{Deserialize, Serialize};
 use std::str;
+use sqlx::FromRow;
 
-pub type Pool = r2d2::Pool<r2d2_sqlite::SqliteConnectionManager>;
-pub type Connection = r2d2::PooledConnection<r2d2_sqlite::SqliteConnectionManager>;
-
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, FromRow)]
 pub struct User {
-    pub id: i64,
+    pub id: u64,
     pub username: String,
-    pub pro_until: i64,
+    pub pro_until: u64,
     pub pass_hash: String,
 }
 
-pub async fn create_user(pool: &Pool, username: String, password: String) -> Result<User, Error> {
-    let pool = pool.clone();
-    let conn = web::block(move || pool.get()).await?.map_err(error::ErrorInternalServerError)?;
-    web::block(move || {
-        let generated_salt = SaltString::generate(&mut OsRng);
-        // argon2id v19
-        let argon2ins = Argon2::default();
-        // hash into phc string
-        let hashed_password = argon2ins.hash_password(password.as_bytes(), &generated_salt);
-        if hashed_password.is_err() {
-            return Ok(User {
-                id: 0,
-                username,
-                pro_until: 0,
-                pass_hash: "".to_string()
-            })
-            .map_err(rusqlite::Error::NulError);
+pub async fn get_user_username(pool: web::Data<sqlx::MySqlPool>, username: String) -> Result<User, sqlx::Error> {
+    let result = sqlx::query_as::<_, User>("SELECT * FROM username WHERE id=?;")
+        .bind(username)
+        .fetch_one(pool.get_ref())
+        .await;
+    
+    match result {
+        Ok(users) => Ok(users),
+        Err(e) => Err(e)
+    }
+}
+
+pub async fn get_user_id(pool: web::Data<sqlx::MySqlPool>, id: u64) -> impl Responder {
+    let result = sqlx::query_as::<_, User>("SELECT * FROM users WHERE id=?;")
+        .bind(id)
+        .fetch_one(pool.get_ref())
+        .await;
+    
+    match result {
+        Ok(users) => HttpResponse::Ok().json(users),
+        Err(e) => {
+            println!("{}", e);
+            HttpResponse::InternalServerError().finish()
         }
-        create_user_entry(conn, username, hashed_password.unwrap().to_string())
-    })
-    .await?
-    .map_err(error::ErrorInternalServerError)
+    }
 }
 
-pub async fn get_user_username(pool: &Pool, username: String) -> Result<User, Error> {
-    let pool = pool.clone();
-
-    let conn = web::block(move || pool.get()).await?.map_err(error::ErrorInternalServerError)?;
-
-    web::block(move || get_user_username_entry(conn, username))
-        .await?
-        .map_err(error::ErrorInternalServerError)
-}
-
-fn get_user_username_entry(conn: Connection, id: String) -> Result<User, rusqlite::Error> {
-    let mut stmt = conn.prepare("SELECT * FROM users WHERE username=?1;")?;
-    stmt.query_row([id], |row| {
-        Ok(User {
-            id: row.get(0)?,
-            username: row.get(1)?,
-            pro_until: row.get(2)?,
-            pass_hash: row.get(3)?
+pub async fn create_user(pool: web::Data<sqlx::MySqlPool>, username: String, password: String) -> Result<User, sqlx::Error> {
+    let generated_salt = SaltString::generate(&mut OsRng);
+    let argon2ins = Argon2::default();
+    let hashed_password = argon2ins.hash_password(password.as_bytes(), &generated_salt);
+    if hashed_password.is_err() {
+        return Ok(User {
+            id: 0,
+            username,
+            pro_until: 0,
+            pass_hash: "".to_string()
         })
-    })
-}
+    }
 
-pub async fn get_user_id(pool: &Pool, id: i64) -> Result<User, Error> {
-    let pool = pool.clone();
+    let password_hash = hashed_password.unwrap().to_string();
 
-    let conn = web::block(move || pool.get()).await?.map_err(error::ErrorInternalServerError)?;
+    let query = sqlx::query("INSERT INTO users (username, pro_until, pass_hash) VALUES (?, 0, ?);")
+        .bind(username.clone())
+        .bind(password_hash.clone())
+        .execute(pool.get_ref())
+        .await;
 
-    web::block(move || get_user_id_entry(conn, id))
-        .await?
-        .map_err(error::ErrorInternalServerError)
-}
-
-fn get_user_id_entry(conn: Connection, id: i64) -> Result<User, rusqlite::Error> {
-    let mut stmt = conn.prepare("SELECT * FROM users WHERE id=?1;")?;
-    stmt.query_row([id], |row| {
-        Ok(User {
-            id: row.get(0)?,
-            username: row.get(1)?,
-            pro_until: row.get(2)?,
-            pass_hash: row.get(3)?
-        })
-    })
-}
-
-fn create_user_entry(conn: Connection, username: String, password_hash: String) -> Result<User, rusqlite::Error> {
-    let mut stmt = conn.prepare("INSERT INTO users (username, pro_until, pass_hash) VALUES (?, 0, ?);")?;
     let mut new_user = User {
         id: 0,
         username,
         pro_until: 0,
         pass_hash: password_hash
     };
-    stmt.execute(params![new_user.username, new_user.pass_hash])?;
-    new_user.id = conn.last_insert_rowid();
-    Ok(new_user)
+    
+    match query {
+        Ok(result) => {
+            new_user.id = result.last_insert_id();
+            Ok(new_user)
+        },
+        Err(e) => {
+            println!("{}", e);
+            Err(e)
+        }
+    }
 }
 
-pub async fn execute_manage_user(pool: &Pool, params: [String; 1]) -> Result<String, Error> {
-    let pool = pool.clone();
-
-    let conn = web::block(move || pool.get()).await?.map_err(error::ErrorInternalServerError)?;
-
-    web::block(move || {
-        manage_delete_user(conn, params)
-    })
-    .await?
-    .map_err(error::ErrorInternalServerError)
-}
-
-fn manage_delete_user(connection: Connection, params: [String; 1]) -> Result<String, rusqlite::Error> {
-    let stmt = connection.prepare("DELETE FROM users WHERE id=?1;")?;
-    execute_manage_action(stmt, params)
-}
-
-fn execute_manage_action(mut statement: Statement, params: [String; 1]) -> Result<String, rusqlite::Error> {
-    if statement.execute(params).is_ok() {
-        Ok("{\"status\":3206}".to_string())
-    } else {
-        Ok("{\"status\":8002}".to_string())
+pub async fn delete_user(pool: web::Data<sqlx::MySqlPool>, id: u64) -> HttpResponse {
+    let result = sqlx::query("DELETE FROM users WHERE id=?;")
+        .bind(id)
+        .execute(pool.get_ref())
+        .await;
+    
+    match result {
+        Ok(_r) => HttpResponse::Ok().finish(),
+        Err(_e) => HttpResponse::InternalServerError().finish()
     }
 }

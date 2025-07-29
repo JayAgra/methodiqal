@@ -5,7 +5,7 @@ use actix_web::{
     web, App, Error as AWError, HttpResponse, HttpServer, Responder,
 };
 use dotenv::dotenv;
-use r2d2_sqlite::{self, SqliteConnectionManager};
+use sqlx::mysql::MySqlPoolOptions;
 use regex::Regex;
 use reqwest::Client;
 use serde::{Deserialize, Serialize};
@@ -15,29 +15,27 @@ mod auth;
 mod db_auth;
 mod jwt;
 
-struct Databases {
-    auth: db_auth::Pool,
-}
-
-async fn auth_post_create(db: web::Data<Databases>, data: web::Json<auth::LoginForm>) -> impl Responder {
-    auth::create_account(&db.auth, data).await
+async fn auth_post_create(db: web::Data<sqlx::Pool<sqlx::MySql>>, data: web::Json<auth::LoginForm>) -> impl Responder {
+    auth::create_account(db, data).await
 }
 
 // login endpoint
-async fn auth_post_login(db: web::Data<Databases>, data: web::Json<auth::LoginForm>) -> impl Responder {
-    auth::login(&db.auth, data).await
+async fn auth_post_login(db: web::Data<sqlx::Pool<sqlx::MySql>>, data: web::Json<auth::LoginForm>) -> impl Responder {
+    auth::login(db, data).await
 }
 
 // delete account endpoint
-async fn auth_post_delete(db: web::Data<Databases>, data: web::Json<auth::LoginForm>) -> Result<HttpResponse, AWError> {
-    Ok(auth::delete_account(&db.auth, data).await?)
+async fn auth_post_delete(db: web::Data<sqlx::Pool<sqlx::MySql>>, data: web::Json<auth::LoginForm>) -> impl Responder {
+    auth::delete_account(db, data).await
 }
 
 // get to confirm session status and obtain current user id
-async fn auth_get_whoami(db: web::Data<Databases>, claims: web::ReqData<jwt::Claims>) -> Result<HttpResponse, AWError> {
-    Ok(HttpResponse::Ok()
-        .insert_header(("Cache-Control", "no-cache"))
-        .json(db_auth::get_user_id(&db.auth, claims.into_inner().sub).await?))
+async fn auth_get_whoami(db: web::Data<sqlx::Pool<sqlx::MySql>>, claims: web::ReqData<jwt::Claims>) -> impl Responder {
+    db_auth::get_user_id(db, claims.into_inner().sub).await
+}
+
+async fn server_health() -> Result<HttpResponse, AWError> {
+    Ok(HttpResponse::Ok().body("".to_string()))
 }
 
 // ChatGPT API forwarding
@@ -71,7 +69,7 @@ impl Message {
     }
 }
 
-const SYSTEM_PROMPT: &str = "Please break this school assignment down into an appropriate number of manageable pieces, assigning a due date for each. Output in a JSON, an array of objects containing a date (in proper time zone), title (name of course and a colon, followed by the name of the assignment shortened and cleaned up if needed, and the title of the step), description (describe step), and duration  (estimate time to complete in minutes). Return ONLY the JSON, the output will be machine read.";
+const SYSTEM_PROMPT: &str = "Please break this school assignment down into an appropriate number of manageable pieces, assigning a due date for each. Output in a JSON, an array of objects containing a date (in proper time zone), title (name of course and a colon, followed by the name of the assignment shortened and cleaned up if needed, and the title of the step), description (describe step), and duration  (estimate time to complete in minutes). Return ONLY the JSON, the output will be machine read. No new lines, spaces, or tabs. Base time estimations on a mid to high level, fast working high school or college student.";
 
 async fn chatgpt_handler(req: web::Json<IncomingChatGptRequest>, _claims: web::ReqData<jwt::Claims>) -> HttpResponse {
     let client = Client::new();
@@ -84,14 +82,14 @@ async fn chatgpt_handler(req: web::Json<IncomingChatGptRequest>, _claims: web::R
     }).into_owned();
 
     let full_prompt = format!(
-        "Course: Test\nAssignment name: Test\nDue date: 01/01/2026 09:00\nCity: America/New York\n\nAssignment content: \"{}\"",
+        "Course: APES\nAssignment name: Immigration Discussion\nDue date: 08/3/2025 11:59\nCity: America/New York\n\nAssignment content: \"{}\"",
         fixed
     );
 
     let response = client
         .post("https://api.openai.com/v1/chat/completions")
         .bearer_auth(api_key)
-        .json(&ChatGptRequest::new("gpt-4.1-nano".to_string(), [Message::new("system".to_string(), SYSTEM_PROMPT.to_string()), Message::new("user".to_string(), full_prompt)].to_vec()))
+        .json(&ChatGptRequest::new("gpt-4.1".to_string(), [Message::new("system".to_string(), SYSTEM_PROMPT.to_string()), Message::new("user".to_string(), full_prompt)].to_vec()))
         .send()
         .await;
 
@@ -120,12 +118,13 @@ async fn main() -> io::Result<()> {
     // load environment variables from .env file
     dotenv().ok();
 
-    // auth database connection
-    let auth_db_manager = SqliteConnectionManager::file("data_auth.db");
-    let auth_db_pool = db_auth::Pool::new(auth_db_manager).unwrap();
-    let auth_db_connection = auth_db_pool.get().expect("auth db: connection failed");
-    auth_db_connection.execute_batch("PRAGMA journal_mode=WAL;").expect("auth db: WAL failed");
-    drop(auth_db_connection);
+    log::info!("Connecting to MySQL");
+
+    let auth_db_pool: sqlx::Pool<sqlx::MySql> = MySqlPoolOptions::new()
+        .max_connections(10)
+        .connect(env::var("SQL_ADDRESS").expect("mysql://root:password@localhost/db").as_ref())
+        .await
+        .expect("Could not connect to MySQL");
 
     // ratelimiting with governor
     let governor_conf = GovernorConfigBuilder::default()
@@ -142,9 +141,7 @@ async fn main() -> io::Result<()> {
         // other static directories
         App::new()
             // add databases to app data
-            .app_data(web::Data::new(Databases {
-                auth: auth_db_pool.clone(),
-            }))
+            .app_data(web::Data::new(auth_db_pool.clone()))
             // use governor ratelimiting as middleware
             .wrap(Governor::new(&governor_conf))
             // logging middleware
@@ -182,6 +179,10 @@ async fn main() -> io::Result<()> {
                 web::resource("/api/v1/chatgpt")
                     .wrap(jwt::Auth)
                     .route(web::post().to(chatgpt_handler))
+            )
+            .service(
+                web::resource("/api/v1/server_health")
+                    .route(web::get().to(server_health))
             )
     })
     .bind("0.0.0.0:3003")?

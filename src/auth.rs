@@ -16,7 +16,7 @@ pub struct LoginForm {
     password: String,
 }
 
-pub async fn create_account(pool: &db_auth::Pool, create_form: web::Json<LoginForm>) -> impl Responder + use<> {
+pub async fn create_account(pool: web::Data<sqlx::MySqlPool>, create_form: web::Json<LoginForm>) -> impl Responder + use<> {
     // check password length is between 8 and 32, inclusive
     if create_form.password.len() >= 8 && create_form.password.len() <= 64 {
         // check if user is a sketchy motherfucker
@@ -28,7 +28,7 @@ pub async fn create_account(pool: &db_auth::Pool, create_form: web::Json<LoginFo
                 .body("{\"token\": \"bad_characters\"}");
         }
         // check if username is taken
-        let target_user_temp: Result<db_auth::User, actix_web::Error> = db_auth::get_user_username(pool, create_form.username.clone()).await;
+        let target_user_temp: Result<db_auth::User, sqlx::Error> = db_auth::get_user_username(pool.clone(), create_form.username.clone()).await;
         if target_user_temp.is_ok() {
             return HttpResponse::BadRequest()
                 .status(StatusCode::from_u16(409).unwrap())
@@ -36,7 +36,7 @@ pub async fn create_account(pool: &db_auth::Pool, create_form: web::Json<LoginFo
                 .body("{\"token\": \"bad_username\"}");
         } else {
             // insert into database
-            let user_temp: Result<db_auth::User, actix_web::Error> = db_auth::create_user(
+            let user_temp: Result<db_auth::User, sqlx::Error> = db_auth::create_user(
                 pool,
                 create_form.username.clone(),
                 create_form.password.clone(),
@@ -65,9 +65,9 @@ pub async fn create_account(pool: &db_auth::Pool, create_form: web::Json<LoginFo
     }
 }
 
-pub async fn login(pool: &db_auth::Pool, login_form: web::Json<LoginForm>) -> impl Responder + use<> {
+pub async fn login(pool: web::Data<sqlx::MySqlPool>, login_form: web::Json<LoginForm>) -> impl Responder + use<> {
     // try to get target user from database
-    let target_user_temp: Result<db_auth::User, actix_web::Error> = db_auth::get_user_username(pool, login_form.username.clone()).await;
+    let target_user_temp: Result<db_auth::User, sqlx::Error> = db_auth::get_user_username(pool, login_form.username.clone()).await;
     if target_user_temp.is_err() {
         // query error, send failure response
         return HttpResponse::BadRequest()
@@ -118,40 +118,38 @@ pub async fn login(pool: &db_auth::Pool, login_form: web::Json<LoginForm>) -> im
     }
 }
 
-pub async fn delete_account(pool: &db_auth::Pool, login_form: web::Json<LoginForm>) -> Result<HttpResponse, actix_web::Error> {
-    let target_user_temp: Result<db_auth::User, actix_web::Error> = db_auth::get_user_username(pool, login_form.username.clone()).await;
+pub async fn delete_account(pool: web::Data<sqlx::MySqlPool>, login_form: web::Json<LoginForm>) -> impl Responder {
+    let target_user_temp: Result<db_auth::User, sqlx::Error> = db_auth::get_user_username(pool.clone(), login_form.username.clone()).await;
     if target_user_temp.is_err() {
-        return Ok(HttpResponse::BadRequest()
+        return HttpResponse::BadRequest()
             .status(StatusCode::from_u16(400).unwrap())
             .insert_header(("Cache-Control", "no-cache"))
-            .body("{\"status\": \"bad\"}"));
+            .body("{\"status\": \"bad\"}");
     }
     let target_user = target_user_temp.unwrap();
     if target_user.id != 0 {
         let parsed_hash = PasswordHash::new(&target_user.pass_hash);
         if parsed_hash.is_err() {
-            return Ok(HttpResponse::BadRequest()
+            return HttpResponse::BadRequest()
                 .status(StatusCode::from_u16(400).unwrap())
                 .insert_header(("Cache-Control", "no-cache"))
-                .body("{\"status\": \"bad\"}"));
+                .body("{\"status\": \"bad\"}");
         }
         if Argon2::default()
             .verify_password(login_form.password.as_bytes(), &parsed_hash.unwrap())
             .is_ok()
         {
-            Ok(HttpResponse::Ok().json(
-                db_auth::execute_manage_user(&pool, [target_user.id.to_string()]).await?,
-            ))
+            db_auth::delete_user(pool, target_user.id).await
         } else {
-            Ok(HttpResponse::BadRequest()
+            HttpResponse::BadRequest()
                 .status(StatusCode::from_u16(400).unwrap())
                 .insert_header(("Cache-Control", "no-cache"))
-                .body("{\"status\": \"bad\"}"))
+                .body("{\"status\": \"bad\"}")
         }
     } else {
-        Ok(HttpResponse::BadRequest()
+        HttpResponse::BadRequest()
             .status(StatusCode::from_u16(400).unwrap())
             .insert_header(("Cache-Control", "no-cache"))
-            .body("{\"status\": \"bad\"}"))
+            .body("{\"status\": \"bad\"}")
     }
 }
