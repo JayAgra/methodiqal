@@ -6,17 +6,22 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		F5B0B46C2E44EAEB003562E0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F5B0B4672E44EAEB003562E0 /* Assets.xcassets */; };
+		F5B0B46D2E44EAEB003562E0 /* Assignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B0B4682E44EAEB003562E0 /* Assignment.swift */; };
+		F5B0B46E2E44EAEB003562E0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B0B4692E44EAEB003562E0 /* ContentView.swift */; };
+		F5B0B46F2E44EAEB003562E0 /* methodiqalApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B0B46A2E44EAEB003562E0 /* methodiqalApp.swift */; };
+		F5B0B4712E44EBD6003562E0 /* Canvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B0B4702E44EBD6003562E0 /* Canvas.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		F5B0B4672E44EAEB003562E0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F5B0B4682E44EAEB003562E0 /* Assignment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Assignment.swift; sourceTree = "<group>"; };
+		F5B0B4692E44EAEB003562E0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		F5B0B46A2E44EAEB003562E0 /* methodiqalApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = methodiqalApp.swift; sourceTree = "<group>"; };
+		F5B0B4702E44EBD6003562E0 /* Canvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Canvas.swift; sourceTree = "<group>"; };
 		F5EC46CA2E346113003F9BBF /* methodiqal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = methodiqal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		F5EC46CC2E346113003F9BBF /* methodiqal */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = methodiqal;
-			sourceTree = "<group>";
-		};
-/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		F5EC46C72E346113003F9BBF /* Frameworks */ = {
@@ -29,10 +34,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F5B0B46B2E44EAEB003562E0 /* methodiqal */ = {
+			isa = PBXGroup;
+			children = (
+				F5B0B4672E44EAEB003562E0 /* Assets.xcassets */,
+				F5B0B4692E44EAEB003562E0 /* ContentView.swift */,
+				F5B0B46A2E44EAEB003562E0 /* methodiqalApp.swift */,
+				F5B0B4682E44EAEB003562E0 /* Assignment.swift */,
+				F5B0B4702E44EBD6003562E0 /* Canvas.swift */,
+			);
+			path = methodiqal;
+			sourceTree = "<group>";
+		};
 		F5EC46C12E346113003F9BBF = {
 			isa = PBXGroup;
 			children = (
-				F5EC46CC2E346113003F9BBF /* methodiqal */,
+				F5B0B46B2E44EAEB003562E0 /* methodiqal */,
 				F5EC46CB2E346113003F9BBF /* Products */,
 			);
 			sourceTree = "<group>";
@@ -59,9 +76,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				F5EC46CC2E346113003F9BBF /* methodiqal */,
 			);
 			name = methodiqal;
 			packageProductDependencies = (
@@ -109,6 +123,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F5B0B46C2E44EAEB003562E0 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -119,6 +134,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F5B0B46D2E44EAEB003562E0 /* Assignment.swift in Sources */,
+				F5B0B46E2E44EAEB003562E0 /* ContentView.swift in Sources */,
+				F5B0B46F2E44EAEB003562E0 /* methodiqalApp.swift in Sources */,
+				F5B0B4712E44EBD6003562E0 /* Canvas.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

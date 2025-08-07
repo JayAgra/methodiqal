@@ -8,17 +8,38 @@
 import SwiftUI
 
 struct ContentView: View {
-    var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+    @State private var assignments: [Assignment] = []
+    
+    var body: some View {        
+        Button(action: {
+            print(0)
+            CanvasClient().getAllAssignments(courseID: "58893") { result in
+                print(1)
+                switch result {
+                case .success(let assignmentResult):
+                    assignments += assignmentResult
+                case .failure(let error):
+                    print(error)
+                }
+            }
+        }, label: {
+            Label("Hi", systemImage: "globe")
+        })
+        
+        if !assignments.isEmpty {
+            List {
+                ForEach(assignments, id: \.self) { assignment in
+                    VStack {
+                        Text(String(assignment.title))
+                            .font(.title3)
+                    }
+                }
+            }
         }
-        .padding()
     }
 }
 
 #Preview {
     ContentView()
 }
+
