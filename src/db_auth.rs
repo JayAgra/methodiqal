@@ -16,7 +16,7 @@ pub struct User {
 }
 
 pub async fn get_user_username(pool: web::Data<sqlx::MySqlPool>, username: String) -> Result<User, sqlx::Error> {
-    let result = sqlx::query_as::<_, User>("SELECT * FROM username WHERE id=?;")
+    let result = sqlx::query_as::<_, User>("SELECT * FROM users WHERE username=?;")
         .bind(username)
         .fetch_one(pool.get_ref())
         .await;
