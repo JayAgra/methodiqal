@@ -40,15 +40,15 @@ extension CanvasAssignmentResponse {
         let submissionType = self.submission_types.first.flatMap { SubmissionType(fromString: $0) } ?? .none
         
         return Assignment(
-            id: String(self.id),
-            source: "Canvas",
+            source: .canvas,
+            sourceBaseUrl: course.baseUrl,
             title: self.name,
             description: self.description,
             dueDate: parseDate(self.due_at),
             submissionType: submissionType,
             status: status,
             pointsPossible: Int(self.points_possible ?? 0.0),
-            courseID: String(self.course_id),
+            courseId: String(self.course_id),
             courseName: course.originalName ?? course.name ?? course.id,
             createdAt: parseDate(self.created_at) ?? Date(),
             updatedAt: parseDate(self.updated_at) ?? Date(),
@@ -68,12 +68,15 @@ public struct CanvasCourseResponse: Codable {
 }
 
 extension CanvasCourseResponse {
-    func toUniversal() -> Course {
+    func toUniversal(baseUrl: String) -> Course {
         return Course(
             id: String(self.id),
+            baseUrl: baseUrl,
+            lms: .canvas,
             name: self.original_name ?? self.name ?? String(self.id),
             originalName: self.original_name,
-            timeZone: self.time_zone ?? "America/New_York"
+            timeZone: self.time_zone ?? "America/New_York",
+            enabled: true
         )
     }
 }
@@ -90,6 +93,28 @@ func getCanvasBaseUrl() -> URL? {
 }
 
 struct CanvasClient {
+    func validateToken(baseURL: String, token: String, completion: @escaping (Bool) -> Void) {
+        guard let url = URL(string: "/\(baseURL)/api/v1/users/self") else {
+            completion(false)
+            return
+        }
+        var request = URLRequest(url: url)
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            guard error == nil, let httpResponse = response as? HTTPURLResponse else {
+                completion(false)
+                return
+            }
+            if httpResponse.statusCode == 200 {
+                completion(true)
+            } else {
+                completion(false)
+            }
+        }
+        task.resume()
+    }
+    
     func fetchCourses(completion: @escaping (Result<[Course], Error>) -> Void) {
         guard let token = getCanvasToken(), let baseURL = getCanvasBaseUrl() else {
             completion(.failure(NSError(domain: "CanvasAPI", code: 1, userInfo: [NSLocalizedDescriptionKey: "Token or base URL is missing."])))
@@ -117,7 +142,7 @@ struct CanvasClient {
                 let courses = try JSONDecoder().decode([CanvasCourseResponse].self, from: data)
                 var universal: [Course] = []
                 courses.forEach { course in
-                    universal.append(course.toUniversal())
+                    universal.append(course.toUniversal(baseUrl: baseURL.host() ?? "canvas.instructure.com"))
                 }
                 completion(.success((universal)))
             } catch {

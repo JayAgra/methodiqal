@@ -16,6 +16,10 @@
 		F5B0B4712E44EBD6003562E0 /* Canvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B0B4702E44EBD6003562E0 /* Canvas.swift */; };
 		F5BCD2A42E4A4DB0003AEAC6 /* LmsAccountStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5BCD2A32E4A4DB0003AEAC6 /* LmsAccountStore.swift */; };
 		F5BCD2A62E4A4E32003AEAC6 /* LmsAccountStoreKeychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5BCD2A52E4A4E32003AEAC6 /* LmsAccountStoreKeychain.swift */; };
+		F5BCD2A82E4A54E0003AEAC6 /* AssignmentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5BCD2A72E4A54E0003AEAC6 /* AssignmentStore.swift */; };
+		F5BCD2AA2E4A59A1003AEAC6 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5BCD2A92E4A59A1003AEAC6 /* SettingsView.swift */; };
+		F5BCD2B22E4A5C00003AEAC6 /* LmsAccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5BCD2B12E4A5C00003AEAC6 /* LmsAccountManager.swift */; };
+		F5BCD2B42E4A5D6C003AEAC6 /* LmsAccountCreateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5BCD2B32E4A5D6C003AEAC6 /* LmsAccountCreateView.swift */; };
 		F5C8D9542E47827500E47FD1 /* AssignmentRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C8D9532E47827500E47FD1 /* AssignmentRunner.swift */; };
 		F5C8D9562E47873600E47FD1 /* SharedSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C8D9552E47873600E47FD1 /* SharedSession.swift */; };
 		F5C8D9582E47883D00E47FD1 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C8D9572E47883D00E47FD1 /* LoginView.swift */; };
@@ -32,6 +36,10 @@
 		F5B0B4702E44EBD6003562E0 /* Canvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Canvas.swift; sourceTree = "<group>"; };
 		F5BCD2A32E4A4DB0003AEAC6 /* LmsAccountStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LmsAccountStore.swift; sourceTree = "<group>"; };
 		F5BCD2A52E4A4E32003AEAC6 /* LmsAccountStoreKeychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LmsAccountStoreKeychain.swift; sourceTree = "<group>"; };
+		F5BCD2A72E4A54E0003AEAC6 /* AssignmentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssignmentStore.swift; sourceTree = "<group>"; };
+		F5BCD2A92E4A59A1003AEAC6 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		F5BCD2B12E4A5C00003AEAC6 /* LmsAccountManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LmsAccountManager.swift; sourceTree = "<group>"; };
+		F5BCD2B32E4A5D6C003AEAC6 /* LmsAccountCreateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LmsAccountCreateView.swift; sourceTree = "<group>"; };
 		F5C8D9532E47827500E47FD1 /* AssignmentRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssignmentRunner.swift; sourceTree = "<group>"; };
 		F5C8D9552E47873600E47FD1 /* SharedSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedSession.swift; sourceTree = "<group>"; };
 		F5C8D9572E47883D00E47FD1 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
@@ -58,6 +66,9 @@
 				F5B0B4692E44EAEB003562E0 /* ContentView.swift */,
 				F5C8D9572E47883D00E47FD1 /* LoginView.swift */,
 				F5C8D9592E4788F900E47FD1 /* LoginController.swift */,
+				F5BCD2A92E4A59A1003AEAC6 /* SettingsView.swift */,
+				F5BCD2B12E4A5C00003AEAC6 /* LmsAccountManager.swift */,
+				F5BCD2B32E4A5D6C003AEAC6 /* LmsAccountCreateView.swift */,
 				F5B0B4682E44EAEB003562E0 /* Assignment.swift */,
 				F55C48872E4A469D0027946B /* Course.swift */,
 				F5B0B4702E44EBD6003562E0 /* Canvas.swift */,
@@ -65,6 +76,7 @@
 				F55C48852E4A2C530027946B /* AuthToken.swift */,
 				F5BCD2A32E4A4DB0003AEAC6 /* LmsAccountStore.swift */,
 				F5BCD2A52E4A4E32003AEAC6 /* LmsAccountStoreKeychain.swift */,
+				F5BCD2A72E4A54E0003AEAC6 /* AssignmentStore.swift */,
 				F5C8D9552E47873600E47FD1 /* SharedSession.swift */,
 			);
 			path = methodiqal;
@@ -165,9 +177,13 @@
 				F5BCD2A62E4A4E32003AEAC6 /* LmsAccountStoreKeychain.swift in Sources */,
 				F5C8D9542E47827500E47FD1 /* AssignmentRunner.swift in Sources */,
 				F5B0B46E2E44EAEB003562E0 /* ContentView.swift in Sources */,
+				F5BCD2AA2E4A59A1003AEAC6 /* SettingsView.swift in Sources */,
 				F5C8D9562E47873600E47FD1 /* SharedSession.swift in Sources */,
 				F5C8D95A2E4788F900E47FD1 /* LoginController.swift in Sources */,
+				F5BCD2B22E4A5C00003AEAC6 /* LmsAccountManager.swift in Sources */,
+				F5BCD2A82E4A54E0003AEAC6 /* AssignmentStore.swift in Sources */,
 				F5B0B46F2E44EAEB003562E0 /* methodiqalApp.swift in Sources */,
+				F5BCD2B42E4A5D6C003AEAC6 /* LmsAccountCreateView.swift in Sources */,
 				F5B0B4712E44EBD6003562E0 /* Canvas.swift in Sources */,
 				F55C48862E4A2C530027946B /* AuthToken.swift in Sources */,
 			);
@@ -312,6 +328,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -340,6 +357,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

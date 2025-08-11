@@ -21,12 +21,13 @@ struct LmsAccount: Identifiable, Codable {
     var baseUrl: String
     var nickname: String
     var enabled: Bool
+    var courses: [Course]
     var tokenKeychainId: String
 }
 
 final class LmsAccountStore {
     static let shared = LmsAccountStore()
-    private let fileName = "accounts.json"
+    private let fileName = "account_data.json"
     private var accounts: [LmsAccount] = []
     
     private init() { load() }
@@ -68,8 +69,15 @@ final class LmsAccountStore {
         return accounts[index].enabled
     }
     
+    func updateCourses(for accountId: UUID, courses: [Course]) -> [Course] {
+        guard let index = accounts.firstIndex(where: { $0.id == accountId }) else { return [] }
+        accounts[index].courses = courses
+        save()
+        return accounts[index].courses
+    }
+    
     func updateNickname(for accountId: UUID, newName: String) -> String {
-        guard let index = accounts.firstIndex(where: { $0.id == accountId }) else { return "Update Failed!" }
+        guard let index = accounts.firstIndex(where: { $0.id == accountId }) else { return "Update Failed" }
         accounts[index].nickname = newName
         save()
         return accounts[index].nickname
