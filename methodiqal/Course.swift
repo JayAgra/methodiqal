@@ -6,3 +6,11 @@
 //
 
 import Foundation
+
+struct Course: Codable, Hashable {
+    let id: String
+    let name: String?
+    let originalName: String?
+    let timeZone: String?
+}
+

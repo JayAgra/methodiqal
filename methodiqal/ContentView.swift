@@ -13,20 +13,20 @@ struct ContentView: View {
     var body: some View {
         Button(action: {
             print(0)
-            CanvasClient().getAllAssignments(courseID: "52870") { result in
-                print(1)
-                switch result {
-                case .success(let assignmentResult):
-                    assignments += assignmentResult
-                case .failure(let error):
-                    print(error)
-                }
-            }
             CanvasClient().fetchCourses() { result in
-                print(2)
+                print(1)
                 switch result {
                 case .success(let coursesResult):
                     print(coursesResult)
+                    CanvasClient().getAllAssignments(course: coursesResult.randomElement()!) { result in
+                        print(1)
+                        switch result {
+                        case .success(let assignmentResult):
+                            assignments += assignmentResult
+                        case .failure(let error):
+                            print(error)
+                        }
+                    }
                 case .failure(let error):
                     print(error)
                 }

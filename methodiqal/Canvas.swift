@@ -27,18 +27,8 @@ public struct CanvasAssignmentResponse: Codable {
     let workflow_state: String
 }
 
-public struct CanvasCourseResponse: Codable {
-    let id: Int
-    let name: String?
-    let course_code: String?
-    let original_name: String?
-    let workflow_state: String?
-    let end_at: String?
-    let time_zone: String?
-}
-
 extension CanvasAssignmentResponse {
-    func toUniversal(courseName: String) -> Assignment {
+    func toUniversal(course: Course) -> Assignment {
         let formatter = ISO8601DateFormatter()
         
         func parseDate(_ dateString: String?) -> Date? {
@@ -59,9 +49,31 @@ extension CanvasAssignmentResponse {
             status: status,
             pointsPossible: Int(self.points_possible ?? 0.0),
             courseID: String(self.course_id),
-            courseName: courseName,
+            courseName: course.originalName ?? course.name ?? course.id,
             createdAt: parseDate(self.created_at) ?? Date(),
-            updatedAt: parseDate(self.updated_at) ?? Date()
+            updatedAt: parseDate(self.updated_at) ?? Date(),
+            timeZone: course.timeZone ?? "America/New_York"
+        )
+    }
+}
+
+public struct CanvasCourseResponse: Codable {
+    let id: Int
+    let name: String?
+    let course_code: String?
+    let original_name: String?
+    let workflow_state: String?
+    let end_at: String?
+    let time_zone: String?
+}
+
+extension CanvasCourseResponse {
+    func toUniversal() -> Course {
+        return Course(
+            id: String(self.id),
+            name: self.original_name ?? self.name ?? String(self.id),
+            originalName: self.original_name,
+            timeZone: self.time_zone ?? "America/New_York"
         )
     }
 }
@@ -78,7 +90,7 @@ func getCanvasBaseUrl() -> URL? {
 }
 
 struct CanvasClient {
-    func fetchCourses(completion: @escaping (Result<[CanvasCourseResponse], Error>) -> Void) {
+    func fetchCourses(completion: @escaping (Result<[Course], Error>) -> Void) {
         guard let token = getCanvasToken(), let baseURL = getCanvasBaseUrl() else {
             completion(.failure(NSError(domain: "CanvasAPI", code: 1, userInfo: [NSLocalizedDescriptionKey: "Token or base URL is missing."])))
             return
@@ -94,66 +106,68 @@ struct CanvasClient {
         
         sharedSession.dataTask(with: request) { data, response, error in
             if let error = error {
-                completion(.failure(error))
-                return
+                completion(.failure(error)); return
             }
             
             guard let data = data else {
-                completion(.failure(NSError(domain: "CanvasAPI", code: 2, userInfo: [NSLocalizedDescriptionKey: "No data received."])))
-                return
+                completion(.failure(NSError(domain: "CanvasAPI", code: 2, userInfo: [NSLocalizedDescriptionKey: "No data received."]))); return
             }
             
             do {
                 let courses = try JSONDecoder().decode([CanvasCourseResponse].self, from: data)
-                completion(.success(courses))
+                var universal: [Course] = []
+                courses.forEach { course in
+                    universal.append(course.toUniversal())
+                }
+                completion(.success((universal)))
             } catch {
                 completion(.failure(error))
             }
         }.resume()
     }
     
-    func getAllAssignments(courseID: String, completion: @escaping (Result<[Assignment], Error>) -> Void) {
-        
+    func getAllAssignments(course: Course, completion: @escaping (Result<[Assignment], Error>) -> Void) {
         guard let token = getCanvasToken() else {
-            completion(.failure(NSError(domain: "CanvasClientError", code: 0, userInfo: [NSLocalizedDescriptionKey: "the API token for Canvas was not provided"])))
-            return
+            completion(.failure(NSError(domain: "CanvasClientError", code: 0, userInfo: [NSLocalizedDescriptionKey: "the API token for Canvas was not provided"]))); return
         }
         
         guard let baseURL = getCanvasBaseUrl() else {
-            completion(.failure(NSError(domain: "CanvasClientError", code: 0, userInfo: [NSLocalizedDescriptionKey: "the base URL for Canvas was not provided"])))
-            return
+            completion(.failure(NSError(domain: "CanvasClientError", code: 0, userInfo: [NSLocalizedDescriptionKey: "the base URL for Canvas was not provided"]))); return
         }
         
         var allAssignments = [Assignment]()
-        var nextURL: URL? = baseURL.appendingPathComponent("/courses/\(courseID)/assignments")
-        
-        fetchAssignmentsPage(url: nextURL, token: token) { result in
+        var nextURL: URL? = baseURL.appendingPathComponent("/courses/\(course.id)/assignments")
+        print("A")
+        fetchAssignmentsPage(url: nextURL, token: token, course: course) { result in
+            print("B")
             switch result {
             case .success((let assignments, let nextPageURL)):
+                print("C")
                 allAssignments.append(contentsOf: assignments)
                 
                 if let nextPageURLCheck = nextPageURL {
                     nextURL = nextPageURLCheck
-                    self.fetchAssignmentsPage(url: nextURL, token: token) { result in
+                    self.fetchAssignmentsPage(url: nextURL, token: token, course: course) { result in
                         switch result {
                         case .success((let newAssignments, _)):
                             allAssignments.append(contentsOf: newAssignments)
-                            completion(.success(allAssignments))
+                            completion(.success(Array(Set(allAssignments))))
                         case .failure(let error):
                             completion(.failure(error))
                         }
                     }
                 } else {
-                    completion(.success(allAssignments))
+                    completion(.success(Array(Set(allAssignments))))
                 }
                 
             case .failure(let error):
+                print("D")
                 completion(.failure(error))
             }
         }
     }
     
-    private func fetchAssignmentsPage(url: URL?, token: String, completion: @escaping (Result<([Assignment], URL?), Error>) -> Void) {
+    private func fetchAssignmentsPage(url: URL?, token: String, course: Course, completion: @escaping (Result<([Assignment], URL?), Error>) -> Void) {
         guard let url = url else {
             completion(.failure(NSError(domain: "CanvasClientError", code: 0, userInfo: [NSLocalizedDescriptionKey: "invalid URL"])))
             return
@@ -188,7 +202,7 @@ struct CanvasClient {
                 var universal: [Assignment] = []
                 
                 assignments.forEach { assignment in
-                    universal.append(assignment.toUniversal(courseName: String(assignment.course_id)))
+                    universal.append(assignment.toUniversal(course: course))
                 }
                 
                 completion(.success((universal, nextPageURL)))

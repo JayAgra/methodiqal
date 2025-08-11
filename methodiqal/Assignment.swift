@@ -20,6 +20,7 @@ struct Assignment: Codable, Hashable {
     let courseName: String
     let createdAt: Date?
     let updatedAt: Date?
+    let timeZone: String?
 }
 
 extension Assignment {
@@ -27,7 +28,7 @@ extension Assignment {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         formatter.timeStyle = .short
-        let meta = "Course: " + self.courseName + "\nTitle: " + self.title + "\nDue Date: " + formatter.string(from: self.dueDate ?? Date()) + "\nAssigned: " + formatter.string(from: self.createdAt ?? self.updatedAt ?? Date()) + "\nType: " + self.submissionType.toString();
+        let meta = "Course: " + self.courseName + "\nTitle: " + self.title + "\nDue Date: " + formatter.string(from: self.dueDate ?? Date()) + "\nAssigned: " + formatter.string(from: self.createdAt ?? self.updatedAt ?? Date()) + "\nTime Zone: " + (self.timeZone ?? "America/New_York") + "\nType: " + self.submissionType.toString();
         return String(meta + "\n\nDescription: " + (self.description ?? "<none given>"));
     }
 }

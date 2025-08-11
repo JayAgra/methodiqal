@@ -8,11 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		F55C48862E4A2C530027946B /* AuthToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55C48852E4A2C530027946B /* AuthToken.swift */; };
+		F55C48882E4A469D0027946B /* Course.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55C48872E4A469D0027946B /* Course.swift */; };
 		F5B0B46C2E44EAEB003562E0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F5B0B4672E44EAEB003562E0 /* Assets.xcassets */; };
 		F5B0B46D2E44EAEB003562E0 /* Assignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B0B4682E44EAEB003562E0 /* Assignment.swift */; };
 		F5B0B46E2E44EAEB003562E0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B0B4692E44EAEB003562E0 /* ContentView.swift */; };
 		F5B0B46F2E44EAEB003562E0 /* methodiqalApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B0B46A2E44EAEB003562E0 /* methodiqalApp.swift */; };
 		F5B0B4712E44EBD6003562E0 /* Canvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B0B4702E44EBD6003562E0 /* Canvas.swift */; };
+		F5BCD2A42E4A4DB0003AEAC6 /* LmsAccountStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5BCD2A32E4A4DB0003AEAC6 /* LmsAccountStore.swift */; };
+		F5BCD2A62E4A4E32003AEAC6 /* LmsAccountStoreKeychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5BCD2A52E4A4E32003AEAC6 /* LmsAccountStoreKeychain.swift */; };
 		F5C8D9542E47827500E47FD1 /* AssignmentRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C8D9532E47827500E47FD1 /* AssignmentRunner.swift */; };
 		F5C8D9562E47873600E47FD1 /* SharedSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C8D9552E47873600E47FD1 /* SharedSession.swift */; };
 		F5C8D9582E47883D00E47FD1 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C8D9572E47883D00E47FD1 /* LoginView.swift */; };
@@ -21,11 +24,14 @@
 
 /* Begin PBXFileReference section */
 		F55C48852E4A2C530027946B /* AuthToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthToken.swift; sourceTree = "<group>"; };
+		F55C48872E4A469D0027946B /* Course.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Course.swift; sourceTree = "<group>"; };
 		F5B0B4672E44EAEB003562E0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F5B0B4682E44EAEB003562E0 /* Assignment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Assignment.swift; sourceTree = "<group>"; };
 		F5B0B4692E44EAEB003562E0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		F5B0B46A2E44EAEB003562E0 /* methodiqalApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = methodiqalApp.swift; sourceTree = "<group>"; };
 		F5B0B4702E44EBD6003562E0 /* Canvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Canvas.swift; sourceTree = "<group>"; };
+		F5BCD2A32E4A4DB0003AEAC6 /* LmsAccountStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LmsAccountStore.swift; sourceTree = "<group>"; };
+		F5BCD2A52E4A4E32003AEAC6 /* LmsAccountStoreKeychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LmsAccountStoreKeychain.swift; sourceTree = "<group>"; };
 		F5C8D9532E47827500E47FD1 /* AssignmentRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssignmentRunner.swift; sourceTree = "<group>"; };
 		F5C8D9552E47873600E47FD1 /* SharedSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedSession.swift; sourceTree = "<group>"; };
 		F5C8D9572E47883D00E47FD1 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
@@ -53,9 +59,12 @@
 				F5C8D9572E47883D00E47FD1 /* LoginView.swift */,
 				F5C8D9592E4788F900E47FD1 /* LoginController.swift */,
 				F5B0B4682E44EAEB003562E0 /* Assignment.swift */,
+				F55C48872E4A469D0027946B /* Course.swift */,
 				F5B0B4702E44EBD6003562E0 /* Canvas.swift */,
 				F5C8D9532E47827500E47FD1 /* AssignmentRunner.swift */,
 				F55C48852E4A2C530027946B /* AuthToken.swift */,
+				F5BCD2A32E4A4DB0003AEAC6 /* LmsAccountStore.swift */,
+				F5BCD2A52E4A4E32003AEAC6 /* LmsAccountStoreKeychain.swift */,
 				F5C8D9552E47873600E47FD1 /* SharedSession.swift */,
 			);
 			path = methodiqal;
@@ -150,7 +159,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				F5B0B46D2E44EAEB003562E0 /* Assignment.swift in Sources */,
+				F5BCD2A42E4A4DB0003AEAC6 /* LmsAccountStore.swift in Sources */,
 				F5C8D9582E47883D00E47FD1 /* LoginView.swift in Sources */,
+				F55C48882E4A469D0027946B /* Course.swift in Sources */,
+				F5BCD2A62E4A4E32003AEAC6 /* LmsAccountStoreKeychain.swift in Sources */,
 				F5C8D9542E47827500E47FD1 /* AssignmentRunner.swift in Sources */,
 				F5B0B46E2E44EAEB003562E0 /* ContentView.swift in Sources */,
 				F5C8D9562E47873600E47FD1 /* SharedSession.swift in Sources */,
