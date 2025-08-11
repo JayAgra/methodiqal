@@ -22,6 +22,15 @@ struct ContentView: View {
                     print(error)
                 }
             }
+            CanvasClient().fetchCourses() { result in
+                print(2)
+                switch result {
+                case .success(let coursesResult):
+                    print(coursesResult)
+                case .failure(let error):
+                    print(error)
+                }
+            }
         }, label: {
             Label("Hi", systemImage: "globe")
         })

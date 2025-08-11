@@ -20,10 +20,10 @@ class LoginController: ObservableObject {
     func loadAuthStatus() {
         let token = getToken();
         if token == "" {
-            state = 1; return
+            setNewState(newState: 1); return;
         } else {
             guard let whoami = URL(string: "https://methodiqal.io/api/v1/auth/whoami") else {
-                state = 1; return
+                setNewState(newState: 1); return;
             }
             var request = URLRequest(url: whoami)
             request.httpMethod = "GET"
@@ -37,9 +37,9 @@ class LoginController: ObservableObject {
                     let statusCode = httpResponse.statusCode
                     switch statusCode {
                     case 200:
-                        self.state = 4; return;
+                        self.setNewState(newState: 4); return;
                     default:
-                        self.state = 1; return;
+                        self.setNewState(newState: 1); return;
                     }
                 }
             }.resume()
@@ -48,7 +48,7 @@ class LoginController: ObservableObject {
     
     func authenticate() {
         let previousState = state
-        state = 3
+        setNewState(newState: 3)
         do {
             let jsonData = try JSONSerialization.data(withJSONObject: ["username": authenticationData[0], "password": authenticationData[1]])
             if previousState == 1 {
@@ -84,7 +84,7 @@ class LoginController: ObservableObject {
                         do {
                             let response = try decoder.decode(TokenResponse.self, from: data)
                             saveToken(token: response.token)
-                            self.state = 4
+                            self.setNewState(newState: 4)
                             return
                         } catch {
                             self.returnError(returnTo: 1, message: "Failed to parse token response from server")
@@ -146,7 +146,7 @@ class LoginController: ObservableObject {
                         do {
                             let response = try decoder.decode(TokenResponse.self, from: data)
                             saveToken(token: response.token)
-                            self.state = 4
+                            self.setNewState(newState: 4)
                             return
                         } catch {
                             self.returnError(returnTo: 1, message: "Failed to parse token response from server. Your account should exist.")
@@ -172,6 +172,12 @@ class LoginController: ObservableObject {
                 }
             }
         }.resume()
+    }
+    
+    func setNewState(newState: Int) {
+        DispatchQueue.main.async {
+            self.state = newState
+        }
     }
     
     func returnError(returnTo: Int, message: String) {

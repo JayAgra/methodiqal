@@ -11,8 +11,8 @@ import SwiftUI
 struct methodiqalApp: App {
     var body: some Scene {
         WindowGroup {
-            // ContentView()
-            LoginView(loginController: LoginController())
+            ContentView()
+            // LoginView(loginController: LoginController())
         }
     }
 }

@@ -27,6 +27,16 @@ public struct CanvasAssignmentResponse: Codable {
     let workflow_state: String
 }
 
+public struct CanvasCourseResponse: Codable {
+    let id: Int
+    let name: String?
+    let course_code: String?
+    let original_name: String?
+    let workflow_state: String?
+    let end_at: String?
+    let time_zone: String?
+}
+
 extension CanvasAssignmentResponse {
     func toUniversal(courseName: String) -> Assignment {
         let formatter = ISO8601DateFormatter()
@@ -68,6 +78,40 @@ func getCanvasBaseUrl() -> URL? {
 }
 
 struct CanvasClient {
+    func fetchCourses(completion: @escaping (Result<[CanvasCourseResponse], Error>) -> Void) {
+        guard let token = getCanvasToken(), let baseURL = getCanvasBaseUrl() else {
+            completion(.failure(NSError(domain: "CanvasAPI", code: 1, userInfo: [NSLocalizedDescriptionKey: "Token or base URL is missing."])))
+            return
+        }
+        
+        let url = baseURL.appendingPathComponent("/courses")
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        
+        let sharedSession = URLSession.shared
+        
+        sharedSession.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(NSError(domain: "CanvasAPI", code: 2, userInfo: [NSLocalizedDescriptionKey: "No data received."])))
+                return
+            }
+            
+            do {
+                let courses = try JSONDecoder().decode([CanvasCourseResponse].self, from: data)
+                completion(.success(courses))
+            } catch {
+                completion(.failure(error))
+            }
+        }.resume()
+    }
+    
     func getAllAssignments(courseID: String, completion: @escaping (Result<[Assignment], Error>) -> Void) {
         
         guard let token = getCanvasToken() else {
