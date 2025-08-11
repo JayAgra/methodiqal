@@ -36,6 +36,13 @@ struct SettingsView: View {
                         })
                     }
                 }
+                Section {
+                    Button(action: {
+                        updateAuthToken(tokenData: Data())
+                    }, label: {
+                        Label("Log Out", systemImage: "key").labelStyle(.titleOnly)
+                    })
+                }
             }
         }
     }

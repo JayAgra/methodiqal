@@ -36,6 +36,13 @@ final class LmsAccountStore {
         return accounts
     }
     
+    func getAccount(_ id: UUID) -> LmsAccount? {
+        if let account = accounts.first(where: { $0.id == id }) {
+            return account
+        }
+        return nil
+    }
+    
     func allEnabledAccounts() -> [LmsAccount] {
         return accounts.filter { $0.enabled }
     }

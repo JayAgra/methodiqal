@@ -20,6 +20,7 @@
 		F5BCD2AA2E4A59A1003AEAC6 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5BCD2A92E4A59A1003AEAC6 /* SettingsView.swift */; };
 		F5BCD2B22E4A5C00003AEAC6 /* LmsAccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5BCD2B12E4A5C00003AEAC6 /* LmsAccountManager.swift */; };
 		F5BCD2B42E4A5D6C003AEAC6 /* LmsAccountCreateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5BCD2B32E4A5D6C003AEAC6 /* LmsAccountCreateView.swift */; };
+		F5BCD2B62E4A7394003AEAC6 /* AssignmentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5BCD2B52E4A7394003AEAC6 /* AssignmentView.swift */; };
 		F5C8D9542E47827500E47FD1 /* AssignmentRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C8D9532E47827500E47FD1 /* AssignmentRunner.swift */; };
 		F5C8D9562E47873600E47FD1 /* SharedSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C8D9552E47873600E47FD1 /* SharedSession.swift */; };
 		F5C8D9582E47883D00E47FD1 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C8D9572E47883D00E47FD1 /* LoginView.swift */; };
@@ -40,6 +41,7 @@
 		F5BCD2A92E4A59A1003AEAC6 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		F5BCD2B12E4A5C00003AEAC6 /* LmsAccountManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LmsAccountManager.swift; sourceTree = "<group>"; };
 		F5BCD2B32E4A5D6C003AEAC6 /* LmsAccountCreateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LmsAccountCreateView.swift; sourceTree = "<group>"; };
+		F5BCD2B52E4A7394003AEAC6 /* AssignmentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssignmentView.swift; sourceTree = "<group>"; };
 		F5C8D9532E47827500E47FD1 /* AssignmentRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssignmentRunner.swift; sourceTree = "<group>"; };
 		F5C8D9552E47873600E47FD1 /* SharedSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedSession.swift; sourceTree = "<group>"; };
 		F5C8D9572E47883D00E47FD1 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
@@ -63,9 +65,10 @@
 			children = (
 				F5B0B4672E44EAEB003562E0 /* Assets.xcassets */,
 				F5B0B46A2E44EAEB003562E0 /* methodiqalApp.swift */,
-				F5B0B4692E44EAEB003562E0 /* ContentView.swift */,
 				F5C8D9572E47883D00E47FD1 /* LoginView.swift */,
 				F5C8D9592E4788F900E47FD1 /* LoginController.swift */,
+				F5B0B4692E44EAEB003562E0 /* ContentView.swift */,
+				F5BCD2B52E4A7394003AEAC6 /* AssignmentView.swift */,
 				F5BCD2A92E4A59A1003AEAC6 /* SettingsView.swift */,
 				F5BCD2B12E4A5C00003AEAC6 /* LmsAccountManager.swift */,
 				F5BCD2B32E4A5D6C003AEAC6 /* LmsAccountCreateView.swift */,
@@ -180,6 +183,7 @@
 				F5BCD2AA2E4A59A1003AEAC6 /* SettingsView.swift in Sources */,
 				F5C8D9562E47873600E47FD1 /* SharedSession.swift in Sources */,
 				F5C8D95A2E4788F900E47FD1 /* LoginController.swift in Sources */,
+				F5BCD2B62E4A7394003AEAC6 /* AssignmentView.swift in Sources */,
 				F5BCD2B22E4A5C00003AEAC6 /* LmsAccountManager.swift in Sources */,
 				F5BCD2A82E4A54E0003AEAC6 /* AssignmentStore.swift in Sources */,
 				F5B0B46F2E44EAEB003562E0 /* methodiqalApp.swift in Sources */,

@@ -131,12 +131,13 @@ struct LoginView: View {
                     }
                 )
                 case 4: (
-                    VStack {
-                        Spacer(); ProgressView(); Text("Authentication Successful"); Spacer();
-                    }
-                        .onAppear() {
-                            // close auth
-                        }
+//                    VStack {
+//                        Spacer(); ProgressView(); Text("Authentication Successful"); Spacer();
+//                    }
+//                        .onAppear() {
+//                            // close auth
+//                        }
+                    ContentView()
                 )
                 default: (
                     VStack {

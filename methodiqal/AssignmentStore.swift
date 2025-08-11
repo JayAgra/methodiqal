@@ -15,11 +15,7 @@ final class AssignmentStore {
     private init() { load() }
     
     func addAssignments(_ newAssignments: [Assignment]) {
-        let beforeCount = assignments.count
         assignments.formUnion(newAssignments)
-        if assignments.count != beforeCount {
-            save()
-        }
     }
     
     func allAssignments() -> [Assignment] {

@@ -61,7 +61,7 @@ extension Assignment: Equatable, Hashable {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         formatter.timeStyle = .short
-        let meta = "Course: " + self.courseName + "\nTitle: " + self.title + "\nDue Date: " + formatter.string(from: self.dueDate ?? Date()) + "\nAssigned: " + formatter.string(from: self.createdAt ?? self.updatedAt ?? Date()) + "\nTime Zone: " + (self.timeZone ?? "America/New_York") + "\nType: " + self.submissionType.toString();
+        let meta = "Course: " + self.courseName + "\nTitle: " + self.title + "\nDue Date: " + formatter.string(from: self.dueDate ?? Date.now.addingTimeInterval(86400)) + "\nAssigned: " + formatter.string(from: self.createdAt ?? self.updatedAt ?? Date.now.addingTimeInterval(-86400)) + "\nTime Zone: " + (self.timeZone ?? "America/New_York") + "\nType: " + self.submissionType.toString();
         return String(meta + "\n\nDescription: " + (self.description ?? "<none given>"));
     }
     

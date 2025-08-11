@@ -81,20 +81,9 @@ extension CanvasCourseResponse {
     }
 }
 
-// provides flexibility to change storage method
-func getCanvasToken() -> String? {
-    // return UserDefaults.standard.string(forKey: "canvasToken")
-    return ""
-}
-
-func getCanvasBaseUrl() -> URL? {
-    // return URL(string: UserDefaults.standard.string(forKey: "canvasURL") ?? "https://canvas.instructure.com/api/v1")
-    return URL(string: "")
-}
-
 struct CanvasClient {
     func validateToken(baseURL: String, token: String, completion: @escaping (Bool) -> Void) {
-        guard let url = URL(string: "/\(baseURL)/api/v1/users/self") else {
+        guard let url = URL(string: "\(baseURL)/users/self") else {
             completion(false)
             return
         }
@@ -115,8 +104,8 @@ struct CanvasClient {
         task.resume()
     }
     
-    func fetchCourses(completion: @escaping (Result<[Course], Error>) -> Void) {
-        guard let token = getCanvasToken(), let baseURL = getCanvasBaseUrl() else {
+    func fetchCourses(account: LmsAccount, completion: @escaping (Result<[Course], Error>) -> Void) {
+        guard let token = LmsAccountStoreKeychain.shared.read(for: account.tokenKeychainId), let baseURL = URL(string: account.baseUrl) else {
             completion(.failure(NSError(domain: "CanvasAPI", code: 1, userInfo: [NSLocalizedDescriptionKey: "Token or base URL is missing."])))
             return
         }
@@ -151,13 +140,10 @@ struct CanvasClient {
         }.resume()
     }
     
-    func getAllAssignments(course: Course, completion: @escaping (Result<[Assignment], Error>) -> Void) {
-        guard let token = getCanvasToken() else {
-            completion(.failure(NSError(domain: "CanvasClientError", code: 0, userInfo: [NSLocalizedDescriptionKey: "the API token for Canvas was not provided"]))); return
-        }
-        
-        guard let baseURL = getCanvasBaseUrl() else {
-            completion(.failure(NSError(domain: "CanvasClientError", code: 0, userInfo: [NSLocalizedDescriptionKey: "the base URL for Canvas was not provided"]))); return
+    func getAllAssignments(account: LmsAccount, course: Course, completion: @escaping (Result<[Assignment], Error>) -> Void) {
+        guard let token = LmsAccountStoreKeychain.shared.read(for: account.tokenKeychainId), let baseURL = URL(string: account.baseUrl) else {
+            completion(.failure(NSError(domain: "CanvasAPI", code: 1, userInfo: [NSLocalizedDescriptionKey: "Token or base URL is missing."])))
+            return
         }
         
         var allAssignments = [Assignment]()

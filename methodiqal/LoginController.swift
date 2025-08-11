@@ -14,7 +14,7 @@ struct TokenResponse: Codable {
 class LoginController: ObservableObject {
     @Published public var showAlert: Bool = false
     @Published public var alertMessage: String = ""
-    @Published public var state: Int = 0 // 1 = init, 1/2 = log in/create account, 3 = loading/action, 4 = welcome
+    @Published public var state: Int = 0 // 0 = init, 1/2 = log in/create account, 3 = loading/action, 4 = welcome
     @Published public var authenticationData: [String] = ["", ""]
     
     func loadAuthStatus() {
@@ -31,6 +31,7 @@ class LoginController: ObservableObject {
             sharedSession.dataTask(with: request) { data, response, error in
                 if let error = error {
                     print("Error: \(error.localizedDescription)")
+                    self.setNewState(newState: 1)
                     return
                 }
                 if let httpResponse = response as? HTTPURLResponse {
@@ -165,7 +166,7 @@ class LoginController: ObservableObject {
                     self.returnError(returnTo: 2, message: "Your username and/or password was not between 3 and 64 characters (8 min for password)")
                     return
                 case 500:
-                    self.returnError(returnTo: 2, message: "The server encountered an error when trying to create your account")
+                    self.returnError(returnTo: 2, message: "The server encountered an error when trying to create your account. Most likely your username has already been used.")
                 default:
                     self.returnError(returnTo: 2, message: "Invalid or null server response")
                     return
