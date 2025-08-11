@@ -18,8 +18,18 @@ struct Assignment: Codable, Hashable {
     let pointsPossible: Int?
     let courseID: String
     let courseName: String
-    let createdAt: Date
+    let createdAt: Date?
     let updatedAt: Date?
+}
+
+extension Assignment {
+    func toString() -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .short
+        let meta = "Course: " + self.courseName + "\nTitle: " + self.title + "\nDue Date: " + formatter.string(from: self.dueDate ?? Date()) + "\nAssigned: " + formatter.string(from: self.createdAt ?? self.updatedAt ?? Date()) + "\nType: " + self.submissionType.toString();
+        return String(meta + "\n\nDescription: " + (self.description ?? "<none given>"));
+    }
 }
 
 enum SubmissionType: Codable {
@@ -33,6 +43,19 @@ enum SubmissionType: Codable {
             case "media_recording": self = .recording
             case "none": self = .none
             default: self = .other
+        }
+    }
+}
+
+extension SubmissionType {
+    func toString() -> String {
+        switch self {
+        case .textEntry: "online_text_entry"
+        case .fileUpload:  "online_upload"
+        case .url: "online_url"
+        case .recording: "media_recording"
+        case .none: "none"
+        default: "other"
         }
     }
 }

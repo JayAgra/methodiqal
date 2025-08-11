@@ -7,32 +7,17 @@ repository = "https://github.com/JayAgra/methodiqal"
 license = "Copyright (c) 2025 Jayen Agrawal. All rights reserved."
 
 [dependencies]
-actix = "0.13.1"
 actix-governor = "0.5.0"
 actix-http = "3.4"
 actix-web = { version = "4.4", features = ["openssl"] }
-anyhow = { version = "~1.0" }
 argon2 = "0.5.2"
-async-trait = { version = "~0.1" }
 chrono = { version = "~0.4" }
 dotenv = "0.15.0"
-env_logger = "0.10"
 futures-util = { version = "0.3.17", default-features = false, features = ["std"] }
 jsonwebtoken = "9"
 log = "0.4"
-mysql = "25"
-once_cell = { version = "~1.17" }
-r2d2 = "0.8"
-r2d2_sqlite = "0.22"
-rand = "0.8.5"
 regex = "1.10.3"
 reqwest = { version = "0.11", features = ["json"] }
 serde = { version = "1.0", features = ["derive"] }
-serde_cbor_2 = { version = "0.12.0-dev" }
 serde_json = "1.0"
-sqlx = { version = "0.7", features = ["mysql", "runtime-tokio-native-tls"] }
-tokio = { version = "1", features = ["full"] }
-
-[dependencies.rusqlite]
-version = "0.29"
-features = ["bundled"]
+sqlx = { version = "0.8.6", features = ["mysql", "runtime-tokio-rustls"] }

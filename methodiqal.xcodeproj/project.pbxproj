@@ -7,19 +7,29 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F55C48862E4A2C530027946B /* AuthToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55C48852E4A2C530027946B /* AuthToken.swift */; };
 		F5B0B46C2E44EAEB003562E0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F5B0B4672E44EAEB003562E0 /* Assets.xcassets */; };
 		F5B0B46D2E44EAEB003562E0 /* Assignment.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B0B4682E44EAEB003562E0 /* Assignment.swift */; };
 		F5B0B46E2E44EAEB003562E0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B0B4692E44EAEB003562E0 /* ContentView.swift */; };
 		F5B0B46F2E44EAEB003562E0 /* methodiqalApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B0B46A2E44EAEB003562E0 /* methodiqalApp.swift */; };
 		F5B0B4712E44EBD6003562E0 /* Canvas.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5B0B4702E44EBD6003562E0 /* Canvas.swift */; };
+		F5C8D9542E47827500E47FD1 /* AssignmentRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C8D9532E47827500E47FD1 /* AssignmentRunner.swift */; };
+		F5C8D9562E47873600E47FD1 /* SharedSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C8D9552E47873600E47FD1 /* SharedSession.swift */; };
+		F5C8D9582E47883D00E47FD1 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C8D9572E47883D00E47FD1 /* LoginView.swift */; };
+		F5C8D95A2E4788F900E47FD1 /* LoginController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5C8D9592E4788F900E47FD1 /* LoginController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		F55C48852E4A2C530027946B /* AuthToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthToken.swift; sourceTree = "<group>"; };
 		F5B0B4672E44EAEB003562E0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F5B0B4682E44EAEB003562E0 /* Assignment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Assignment.swift; sourceTree = "<group>"; };
 		F5B0B4692E44EAEB003562E0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		F5B0B46A2E44EAEB003562E0 /* methodiqalApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = methodiqalApp.swift; sourceTree = "<group>"; };
 		F5B0B4702E44EBD6003562E0 /* Canvas.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Canvas.swift; sourceTree = "<group>"; };
+		F5C8D9532E47827500E47FD1 /* AssignmentRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssignmentRunner.swift; sourceTree = "<group>"; };
+		F5C8D9552E47873600E47FD1 /* SharedSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedSession.swift; sourceTree = "<group>"; };
+		F5C8D9572E47883D00E47FD1 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		F5C8D9592E4788F900E47FD1 /* LoginController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginController.swift; sourceTree = "<group>"; };
 		F5EC46CA2E346113003F9BBF /* methodiqal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = methodiqal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -38,10 +48,15 @@
 			isa = PBXGroup;
 			children = (
 				F5B0B4672E44EAEB003562E0 /* Assets.xcassets */,
-				F5B0B4692E44EAEB003562E0 /* ContentView.swift */,
 				F5B0B46A2E44EAEB003562E0 /* methodiqalApp.swift */,
+				F5B0B4692E44EAEB003562E0 /* ContentView.swift */,
+				F5C8D9572E47883D00E47FD1 /* LoginView.swift */,
+				F5C8D9592E4788F900E47FD1 /* LoginController.swift */,
 				F5B0B4682E44EAEB003562E0 /* Assignment.swift */,
 				F5B0B4702E44EBD6003562E0 /* Canvas.swift */,
+				F5C8D9532E47827500E47FD1 /* AssignmentRunner.swift */,
+				F55C48852E4A2C530027946B /* AuthToken.swift */,
+				F5C8D9552E47873600E47FD1 /* SharedSession.swift */,
 			);
 			path = methodiqal;
 			sourceTree = "<group>";
@@ -135,9 +150,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				F5B0B46D2E44EAEB003562E0 /* Assignment.swift in Sources */,
+				F5C8D9582E47883D00E47FD1 /* LoginView.swift in Sources */,
+				F5C8D9542E47827500E47FD1 /* AssignmentRunner.swift in Sources */,
 				F5B0B46E2E44EAEB003562E0 /* ContentView.swift in Sources */,
+				F5C8D9562E47873600E47FD1 /* SharedSession.swift in Sources */,
+				F5C8D95A2E4788F900E47FD1 /* LoginController.swift in Sources */,
 				F5B0B46F2E44EAEB003562E0 /* methodiqalApp.swift in Sources */,
 				F5B0B4712E44EBD6003562E0 /* Canvas.swift in Sources */,
+				F55C48862E4A2C530027946B /* AuthToken.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

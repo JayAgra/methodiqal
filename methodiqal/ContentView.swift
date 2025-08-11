@@ -10,10 +10,10 @@ import SwiftUI
 struct ContentView: View {
     @State private var assignments: [Assignment] = []
     
-    var body: some View {        
+    var body: some View {
         Button(action: {
             print(0)
-            CanvasClient().getAllAssignments(courseID: "58893") { result in
+            CanvasClient().getAllAssignments(courseID: "52870") { result in
                 print(1)
                 switch result {
                 case .success(let assignmentResult):
@@ -29,9 +29,19 @@ struct ContentView: View {
         if !assignments.isEmpty {
             List {
                 ForEach(assignments, id: \.self) { assignment in
+                    var formattedDueDate: String {
+                        let formatter = DateFormatter()
+                        formatter.dateStyle = .medium
+                        formatter.timeStyle = .short
+                        return formatter.string(from: assignment.dueDate ?? Date())
+                    }
+                    
                     VStack {
                         Text(String(assignment.title))
-                            .font(.title3)
+                            .font(.title2)
+                        Text(String(assignment.description ?? ""))
+                        Text(formattedDueDate)
+                            .font(.footnote)
                     }
                 }
             }
