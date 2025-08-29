@@ -148,12 +148,9 @@ struct CanvasClient {
         
         var allAssignments = [Assignment]()
         var nextURL: URL? = baseURL.appendingPathComponent("/courses/\(course.id)/assignments")
-        print("A")
         fetchAssignmentsPage(url: nextURL, token: token, course: course) { result in
-            print("B")
             switch result {
             case .success((let assignments, let nextPageURL)):
-                print("C")
                 allAssignments.append(contentsOf: assignments)
                 
                 if let nextPageURLCheck = nextPageURL {
@@ -172,7 +169,6 @@ struct CanvasClient {
                 }
                 
             case .failure(let error):
-                print("D")
                 completion(.failure(error))
             }
         }

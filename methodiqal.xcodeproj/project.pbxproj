@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F534B96A2E6236D300D4C90C /* EventAdder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F534B9692E6236D300D4C90C /* EventAdder.swift */; };
 		F55C48862E4A2C530027946B /* AuthToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55C48852E4A2C530027946B /* AuthToken.swift */; };
 		F55C48882E4A469D0027946B /* Course.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55C48872E4A469D0027946B /* Course.swift */; };
 		F5B0B46C2E44EAEB003562E0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F5B0B4672E44EAEB003562E0 /* Assets.xcassets */; };
@@ -28,6 +29,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		F534B9692E6236D300D4C90C /* EventAdder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventAdder.swift; sourceTree = "<group>"; };
+		F534B96B2E623A0E00D4C90C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		F55C48852E4A2C530027946B /* AuthToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthToken.swift; sourceTree = "<group>"; };
 		F55C48872E4A469D0027946B /* Course.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Course.swift; sourceTree = "<group>"; };
 		F5B0B4672E44EAEB003562E0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -63,6 +66,7 @@
 		F5B0B46B2E44EAEB003562E0 /* methodiqal */ = {
 			isa = PBXGroup;
 			children = (
+				F534B96B2E623A0E00D4C90C /* Info.plist */,
 				F5B0B4672E44EAEB003562E0 /* Assets.xcassets */,
 				F5B0B46A2E44EAEB003562E0 /* methodiqalApp.swift */,
 				F5C8D9572E47883D00E47FD1 /* LoginView.swift */,
@@ -76,6 +80,7 @@
 				F55C48872E4A469D0027946B /* Course.swift */,
 				F5B0B4702E44EBD6003562E0 /* Canvas.swift */,
 				F5C8D9532E47827500E47FD1 /* AssignmentRunner.swift */,
+				F534B9692E6236D300D4C90C /* EventAdder.swift */,
 				F55C48852E4A2C530027946B /* AuthToken.swift */,
 				F5BCD2A32E4A4DB0003AEAC6 /* LmsAccountStore.swift */,
 				F5BCD2A52E4A4E32003AEAC6 /* LmsAccountStoreKeychain.swift */,
@@ -174,6 +179,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F5B0B46D2E44EAEB003562E0 /* Assignment.swift in Sources */,
+				F534B96A2E6236D300D4C90C /* EventAdder.swift in Sources */,
 				F5BCD2A42E4A4DB0003AEAC6 /* LmsAccountStore.swift in Sources */,
 				F5C8D9582E47883D00E47FD1 /* LoginView.swift in Sources */,
 				F55C48882E4A469D0027946B /* Course.swift in Sources */,
@@ -327,6 +333,8 @@
 				DEVELOPMENT_TEAM = D6MFYYVHA8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = methodiqal/Info.plist;
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "We need to write to your calendar to add events.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -356,6 +364,8 @@
 				DEVELOPMENT_TEAM = D6MFYYVHA8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = methodiqal/Info.plist;
+				INFOPLIST_KEY_NSCalendarsUsageDescription = "We need to write to your calendar to add events.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

@@ -10,7 +10,7 @@ import SwiftUI
 struct AssignmentView: View {
     var assignment: Assignment
     var assignmentDue: String = ""
-    @State var response = ""
+    @State var response: [AssignmentEvent] = []
     
     init(assignment: Assignment) {
         self.assignment = assignment
@@ -28,13 +28,28 @@ struct AssignmentView: View {
                 .font(.subheadline)
             Text(assignmentDue)
 
-            if response == "" {
+            if response.isEmpty {
                 ProgressView()
             } else {
-                ScrollView {
-                    Text(response)
+                List {
+                    ForEach(response, id: \.date) { step in
+                        VStack {
+                            Text(step.title)
+                                .font(.title)
+                            Text(step.date.ISO8601Format())
+                                .font(.subheadline)
+                            Text(step.duration.description)
+                                .font(.caption)
+                            Text(step.description)
+                            Button(action: {
+                                EventAdder.global.requestEventStore()
+                                EventAdder.global.addEvent(assignmentEvent: step)
+                            }, label: {
+                                Label("Calendar", systemImage: "calendar.badge.plus")
+                            })
+                        }
+                    }
                 }
-                .padding()
             }
         }
         .padding()

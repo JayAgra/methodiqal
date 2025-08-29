@@ -79,15 +79,10 @@ async fn chatgpt_handler(req: web::Json<IncomingChatGptRequest>, _claims: web::R
         format!("\\{}", &caps[0])
     }).into_owned();
 
-    let full_prompt = format!(
-        "Course: APES\nAssignment name: Immigration Discussion\nDue date: 08/3/2025 11:59\nCity: America/New York\n\nAssignment content: \"{}\"",
-        fixed
-    );
-
     let response = client
         .post("https://api.openai.com/v1/chat/completions")
         .bearer_auth(api_key)
-        .json(&ChatGptRequest::new("gpt-4.1".to_string(), [Message::new("system".to_string(), env::var("PROMPT").expect("Please break this school assignment down into an appropriate number of manageable pieces, assigning a due date for each. Output in a JSON, an array of objects containing a date (in proper time zone), title (name of course and a colon, followed by the name of the assignment shortened and cleaned up if needed, and the title of the step), description (describe step), and duration  (estimate time to complete in minutes). Return ONLY the JSON, the output will be machine read. No new lines, spaces, or tabs. Base time estimations on a mid to high level, quite fast working high school or college student.").to_string()), Message::new("user".to_string(), full_prompt)].to_vec()))
+        .json(&ChatGptRequest::new("gpt-4.1".to_string(), [Message::new("system".to_string(), env::var("PROMPT").expect("Please break this school assignment down into an appropriate number of manageable pieces, assigning a due date for each. Output in a JSON, an array of objects containing a date (in proper time zone, working around assumed obligations such as school during the week and keeping schedules at reasonable times of the day), title (name of course and a colon, followed by the name of the assignment shortened and cleaned up if needed, and the title of the step), description (describe step), and duration  (estimate time to complete in minutes). Return ONLY the JSON, the output will be machine read. No new lines, spaces, or tabs. Base time estimations on a mid to high level, quite fast working high school or college student.").to_string()), Message::new("user".to_string(), fixed)].to_vec()))
         .send()
         .await;
 

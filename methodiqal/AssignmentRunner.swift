@@ -16,9 +16,9 @@ struct AssignmentRunner {
         }
     }
     
-    func runAssignment(data: Data, completion: @escaping (String) -> Void) {
+    func runAssignment(data: Data, completion: @escaping ([AssignmentEvent]) -> Void) {
         guard let gpt = URL(string: "https://methodiqal.io/api/v1/chatgpt") else {
-            completion("")
+            completion([])
             return
         }
         
@@ -31,23 +31,82 @@ struct AssignmentRunner {
         request.httpBody = data
         sharedSession.dataTask(with: request) { data, response, error in
             if let error = error {
-                completion(error.localizedDescription)
+                completion([])
                 return
             }
             guard let httpResponse = response as? HTTPURLResponse else {
-                completion("")
+                completion([])
                 return
             }
             switch httpResponse.statusCode {
             case 200:
-                if let data = data, let responseString = String(data: data, encoding: .utf8) {
-                    completion(responseString)
+                if let data = data {
+                    do {
+                        let resp = try JSONDecoder().decode(GptResponse.self, from: data)
+                        
+                        if let content = resp.choices.first?.message.content,
+                           let jsonData = content.data(using: .utf8) {
+                            do {
+                                let assignment = try JSONDecoder().decode([AssignmentEvent].self, from: jsonData)
+                                completion(assignment)
+                            } catch {
+                                print("Failed to decode AssignmentEvent: \(error)")
+                            }
+                        }
+                    } catch {
+                        completion([])
+                    }
                 } else {
-                    completion("")
+                    completion([])
                 }
             default:
-                completion("")
+                completion([])
             }
         }.resume()
+    }
+}
+
+public struct GptAssignmentResponse: Codable {
+    
+}
+
+struct GptResponse: Decodable {
+    let choices: [GptResponseChoice]
+}
+
+struct GptResponseChoice: Decodable {
+    let message: GptResponseMessage
+}
+
+struct GptResponseMessage: Decodable {
+    let content: String
+}
+
+public struct AssignmentEvent: Codable {
+    let date: Date
+    let title: String
+    let description: String
+    let duration: Duration
+    
+    enum CodingKeys: String, CodingKey {
+        case date
+        case title
+        case description
+        case duration
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        let dateString = try container.decode(String.self, forKey: .date)
+        let isoFormatter = ISO8601DateFormatter()
+        self.date = isoFormatter.date(from: dateString) ?? Date()
+
+        self.title = try container.decode(String.self, forKey: .title)
+        self.description = try container.decode(String.self, forKey: .description)
+
+        let durationString = try container.decode(Int.self, forKey: .duration)
+        let minutes = durationString
+        self.duration = Duration.seconds(60 * minutes)
     }
 }
